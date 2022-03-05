@@ -14,15 +14,17 @@ import Backend.Objetos.EDD.Nodo;
  * @author phily
  */
 public class ManejadorOrdenamiento {
-    private final int DESC_POR_MONTO = 0;
-    private final int DESC_POR_NOMBRE = 1;    
+    public final int DESC_POR_MONTO = 0;
+    public final int DESC_POR_NOMBRE = 1;    
     
     public ListaEnlazada<Apuesta> ordenar(int tipoOrden, ListaEnlazada<Apuesta> listadoApuestas){
-        if(tipoOrden == DESC_POR_MONTO){
-            orderByGains(listadoApuestas);            
-        }else{
-            orderByName(listadoApuestas);
-        }        
+        if(!listadoApuestas.isEmpty()){
+            if(tipoOrden == DESC_POR_MONTO){
+                orderByGains(listadoApuestas);            
+            }else{
+                orderByName(listadoApuestas);
+            }
+        }                
         return listadoApuestas;//con tal de no add otra línea después después del llamado a este método xD, puesto que no es nec hacer return ya que estoy trabajando por referencia xD
     }
     
@@ -35,7 +37,7 @@ public class ManejadorOrdenamiento {
              anterior = listadoApuestas.getFirst();
              
              while((nodoSiguiente = anterior.getNext()) != null){//esto garantiza que el nodo "anterior" llegue a la posición n-1 del listado, lo cual es lo que debe suceder... xD
-                 if(anterior.getContent().getNombrePostor().compareTo(nodoSiguiente.getContent().getNombrePostor()) < 0){//es decir: ant > sig = TRUE
+                 if(anterior.getContent().getNombrePostor().compareTo(nodoSiguiente.getContent().getNombrePostor()) > 0){//es decir: ant < sig = TRUE
                      Apuesta temporal = anterior.getContent();
                      anterior.resetContent(nodoSiguiente.getContent());
                      nodoSiguiente.resetContent(temporal);
@@ -55,7 +57,7 @@ public class ManejadorOrdenamiento {
              anterior = listadoApuestas.getFirst();
              
              while((nodoSiguiente = anterior.getNext()) != null){//esto garantiza que el nodo "anterior" llegue a la posición n-1 del listado, lo cual es lo que debe suceder... xD
-                 if(anterior.getContent().getTotalGanado() > nodoSiguiente.getContent().getTotalGanado()){//es decir: ant > sig = TRUE
+                 if(anterior.getContent().getTotalGanado() < nodoSiguiente.getContent().getTotalGanado()){//es decir: ant < sig = TRUE
                      Apuesta temporal = anterior.getContent();
                      anterior.resetContent(nodoSiguiente.getContent());
                      nodoSiguiente.resetContent(temporal);

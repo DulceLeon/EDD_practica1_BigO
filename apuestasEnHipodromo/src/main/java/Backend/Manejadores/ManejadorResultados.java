@@ -7,6 +7,7 @@ package Backend.Manejadores;
 
 import Backend.Objetos.Apuesta.Apuesta;
 import Backend.Objetos.EDD.ListaEnlazada;
+import Backend.Objetos.EDD.Nodo;
 
 /**
  *
@@ -20,23 +21,26 @@ public class ManejadorResultados {//su método debe ser invocado justo después 
         this.apuestasAceptadas = apuestasAceptadas;
     }
     
-    public void mostrarResultadosApuesta(String[] posicionesFinales){//se recibirá el arreglo rsultado que genera el manejador de carrera...
-        ListaEnlazada<Apuesta> copiaListadoApuestas = apuestasAceptadas;
-        
-        while(!copiaListadoApuestas.isEmpty()){//puesto que se eliminará y add al final porque requiero que estos datos existan, vamos a hacer incrementar esta variable, bueno aunque lo que podría hacer es usar una lista auxiliar, para que no tenga necesidad de tener que recuperarla, puesto que la original no cambiaría...
-            int apuestaActual = 0;
-            Apuesta apuesta = copiaListadoApuestas.getFirst().getContent();
-            String[] ordenApostado = apuesta.getOrdenApostado();
+    public void calcularResultadosApuestas(String[] posicionesFinales){//se recibirá el arreglo rsultado que genera el manejador de carrera... aclaro que no hay forma de que este arreglo sea nulo...
+        if(!this.apuestasAceptadas.isEmpty()){
+          Nodo<Apuesta> nodoApuesta = apuestasAceptadas.getFirst();
             
-            while(apuestaActual  < posicionesFinales.length){
-                if(ordenApostado[apuestaActual].equals(posicionesFinales[apuestaActual])){
-                    int montoGanado = this.maximoMonto-apuestaActual;                    
-                    apuesta.setResultados(apuestaActual, String.valueOf(montoGanado));
-                    apuesta.incrementarTotalGanado(montoGanado);
-                }else{
-                    apuesta.setResultados(apuestaActual, "-");
-                }            
-            }
+          do{//puesto que se eliminará y add al final porque requiero que estos datos existan, vamos a hacer incrementar esta variable, bueno aunque lo que podría hacer es usar una lista auxiliar, para que no tenga necesidad de tener que recuperarla, puesto que la original no cambiaría...
+                int apuestaActual = 0;
+                Apuesta apuesta = nodoApuesta.getContent();
+                String[] ordenApostado = apuesta.getOrdenApostado();
+            
+                while(apuestaActual  < posicionesFinales.length){
+                    if(ordenApostado[apuestaActual].equals(posicionesFinales[apuestaActual])){
+                        int montoGanado = this.maximoMonto-apuestaActual;                    
+                        apuesta.setResultados(apuestaActual, String.valueOf(montoGanado));
+                        apuesta.incrementarTotalGanado(montoGanado);
+                    }else{
+                        apuesta.setResultados(apuestaActual, "-");
+                    }            
+                    apuestaActual++;
+                }
+            }while((nodoApuesta = nodoApuesta.getNext()) != null);
         }
         
         for (int revision = 0; revision < apuestasAceptadas.getSize(); revision++) {

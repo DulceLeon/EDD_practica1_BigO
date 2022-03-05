@@ -1,0 +1,10 @@
+				RESULTADOS APUESTAS
+
+[1]  Nombre: Pilar, Monto apostado: 19, Total ganado: 16
+	 jineteJ: -, jineteH: 9, jineteG: -, jineteF: 7, jineteE: -, jineteD: -, jineteC: -, jineteB: -, jineteA: -, jineteI: -
+
+[2]  Nombre: Dulce, Monto apostado: 15, Total ganado: 0
+	 jineteA: -, jineteB: -, jineteC: -, jineteD: -, jineteE: -, jineteF: -, jineteG: -, jineteH: -, jineteI: -, jineteJ: -
+
+[3]  Nombre: Candy, Monto apostado: 1, Total ganado: 0
+	 jineteJ: -, jineteI: -, jineteH: -, jineteG: -, jineteF: -, jineteE: -, jineteD: -, jineteC: -, jineteB: -, jineteA: -

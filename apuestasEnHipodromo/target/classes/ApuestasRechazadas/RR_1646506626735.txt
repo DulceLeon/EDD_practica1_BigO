@@ -1,0 +1,7 @@
+		APUESTAS RECHAZADAS
+
+[1]  Nombre: Dulce
+      Error: Solo especificaste 1 jinetes, Tipo: #elementos insuficientes, Descripcion: El orden apostado, debe incluir todos los jinetes
+
+[2]  Nombre: Pilar
+      Error: Solo especificaste 1 jinetes, Tipo: #elementos insuficientes, Descripcion: El orden apostado, debe incluir todos los jinetes

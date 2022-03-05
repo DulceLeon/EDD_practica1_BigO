@@ -7,8 +7,14 @@ package Frontend;
 
 import Backend.Manejadores.ManejadorCargaArchivo;
 import Backend.Manejadores.ManejadorInterfaz;
+import Backend.Manejadores.ManejadorOrdenamiento;
+import Backend.Manejadores.ManejadorReportes;
 import Backend.Manejadores.TaskManager;
+import Backend.Objetos.Apuesta.Apuesta;
+import Backend.Objetos.EDD.ListaEnlazada;
+import Backend.Objetos.EDD.Nodo;
 import Backend.Objetos.Interfaz.PistaCarreras;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 /**
@@ -16,12 +22,15 @@ import javax.swing.JOptionPane;
  * @author phily
  */
 public class Hipodromo extends javax.swing.JFrame {
+    private ListaEnlazada<JComboBox<String>> listaCombos = new ListaEnlazada<>();
     private final ManejadorInterfaz manejadorInterfaz = new ManejadorInterfaz();
     private final TaskManager taskManager;
     private final Form_SolicitudJinetes form_SolicitudJinetes;    
+    private int filtroAnterior = 0;
     
     //manejadores de carga de datos
     private ManejadorCargaArchivo manejadorCargaArchivo;
+    private ManejadorOrdenamiento manejadorOrdenamiento = new ManejadorOrdenamiento();
     /**
      * Creates new form Hipodromo
      */
@@ -36,11 +45,15 @@ public class Hipodromo extends javax.swing.JFrame {
         String[] jinetesParticipantes = this.form_SolicitudJinetes.getJinetesParticipantes();//según se, esto se exe hasta que el diálogo se cierra... sino entonces tendría que crear en ese diálogo a las clases taskManager y al manejadorCargaArchivo y luego recuperarlas aquí y setear lo que le hace falta...
         //o encerrar el setVisible en un bucle que se llame hasta que lo que devulva el get sea != null, o poner un método en el diálogo que revise si al cerrar el string[] no es nulo para permitir disposearse, sino mostrar un JOP [esto último si es que lo que está bajo el setVisible(true) si se exe luego que el diálgoo en este caso sea disposeado, hasta donde recuerdo [por lo que hice con el Bancopoly] es así xD
         
-        this.manejadorInterfaz.setContenedorPosiciones(contenedor_Posiciones);                
-        taskManager = new TaskManager(btn_cargarApuetas, btn_agregarApuestas, panel_PistaCarreras, manejadorInterfaz, jinetesParticipantes);        
+         llenarItemCombos(jinetesParticipantes);
+        
+        this.manejadorInterfaz.setComponentes(contenedor_Posiciones, table_ResultadosApuestas, cbBox_filtro);                
+        taskManager = new TaskManager(btn_cargarApuetas, btn_agregarApuestas, panel_PistaCarreras, 
+                manejadorInterfaz, jinetesParticipantes, manejadorOrdenamiento);        
         this.taskManager.startCountDown_toBets(label_minutos, labelSegundos);//si hiciera estatic la variable podría hacer que esto se mostraraa después de que el frame aparezca...
         
         this.manejadorCargaArchivo = new ManejadorCargaArchivo(jinetesParticipantes);        
+        this.taskManager.setApuestasAceptadas(this.manejadorCargaArchivo.getApuestasAceptadas(), this.manejadorCargaArchivo.getApuestasErroneas());//Así de una vez se les envía las listas al manejador de interfaz a quien más le urge tenerlas y al de resultados que despuesito la requerirá xD
     }
 
     /**
@@ -60,7 +73,6 @@ public class Hipodromo extends javax.swing.JFrame {
         contenedor_Posiciones = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
         jLabel21 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel22 = new javax.swing.JLabel();
@@ -98,19 +110,29 @@ public class Hipodromo extends javax.swing.JFrame {
         cbBox_lugar8 = new javax.swing.JComboBox<>();
         cbBox_lugar9 = new javax.swing.JComboBox<>();
         cbBox_lugar10 = new javax.swing.JComboBox<>();
-        jPanel3 = new javax.swing.JPanel();
+        tabLayout_apuestas = new javax.swing.JTabbedPane();
+        contenedor_TablaAceptadas = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table_apuestasAprobadas = new javax.swing.JTable();
+        contenedor_TablaRechazadas = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        table_apuestasRechazadas = new javax.swing.JTable();
         jSeparator1 = new javax.swing.JSeparator();
         panel_tab_Resultados = new javax.swing.JPanel();
         jLabel19 = new javax.swing.JLabel();
         cbBox_filtro = new javax.swing.JComboBox<>();
         jPanel4 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        table_ResultadosApuestas = new javax.swing.JTable();
         jSeparator3 = new javax.swing.JSeparator();
         panel_tab_Historial = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tabla_Historial = new javax.swing.JTable();
+        txtA_contenidoRegistro = new javax.swing.JTextArea();
+        btn_RegistroResultadosC = new javax.swing.JButton();
+        btn_RegistroResultadosA = new javax.swing.JButton();
+        btn_RegistrosRechazadas = new javax.swing.JButton();
         jLabel20 = new javax.swing.JLabel();
         jSeparator2 = new javax.swing.JSeparator();
         label_nombreHipodromo = new javax.swing.JLabel();
@@ -143,23 +165,19 @@ public class Hipodromo extends javax.swing.JFrame {
 
         contenedor_Posiciones.setBackground(new java.awt.Color(246, 246, 246));
 
-        jLabel4.setText("jLabel4");
-
         javax.swing.GroupLayout contenedor_PosicionesLayout = new javax.swing.GroupLayout(contenedor_Posiciones);
         contenedor_Posiciones.setLayout(contenedor_PosicionesLayout);
         contenedor_PosicionesLayout.setHorizontalGroup(
             contenedor_PosicionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(contenedor_PosicionesLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(521, Short.MAX_VALUE)
                 .addGroup(contenedor_PosicionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contenedor_PosicionesLayout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addGap(28, 28, 28))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contenedor_PosicionesLayout.createSequentialGroup()
                         .addComponent(jLabel21)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel4)
-                        .addGap(61, 61, 61)
+                        .addGap(117, 117, 117)
                         .addComponent(jLabel1)
                         .addGap(136, 136, 136))))
         );
@@ -172,10 +190,11 @@ public class Hipodromo extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addGap(109, 109, 109))
                     .addGroup(contenedor_PosicionesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel1)
-                        .addComponent(jLabel4)
+                        .addGroup(contenedor_PosicionesLayout.createSequentialGroup()
+                            .addComponent(jLabel1)
+                            .addGap(17, 17, 17))
                         .addComponent(jLabel21, javax.swing.GroupLayout.Alignment.TRAILING)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(56, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout panel_ContenedorLayout = new javax.swing.GroupLayout(panel_Contenedor);
@@ -361,34 +380,24 @@ public class Hipodromo extends javax.swing.JFrame {
         jLabel18.setText("Décimo lugar:");
 
         cbBox_lugar1.setMaximumRowCount(10);
-        cbBox_lugar1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar2.setMaximumRowCount(10);
-        cbBox_lugar2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar3.setMaximumRowCount(10);
-        cbBox_lugar3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar4.setMaximumRowCount(10);
-        cbBox_lugar4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar5.setMaximumRowCount(10);
-        cbBox_lugar5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar6.setMaximumRowCount(10);
-        cbBox_lugar6.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar7.setMaximumRowCount(10);
-        cbBox_lugar7.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar8.setMaximumRowCount(10);
-        cbBox_lugar8.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar9.setMaximumRowCount(10);
-        cbBox_lugar9.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         cbBox_lugar10.setMaximumRowCount(10);
-        cbBox_lugar10.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "jinete A", "jinete B", "jinete C", "jinete D", "jinete E", "jinete F", "jinete G", "jinete H", "jinete I", "jinete J" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -505,7 +514,7 @@ public class Hipodromo extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
                 false, false, false, false, false, false, false, false, false, false, false, false, false
@@ -526,48 +535,110 @@ public class Hipodromo extends javax.swing.JFrame {
             table_apuestasAprobadas.getColumnModel().getColumn(0).setMaxWidth(30);
         }
 
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout contenedor_TablaAceptadasLayout = new javax.swing.GroupLayout(contenedor_TablaAceptadas);
+        contenedor_TablaAceptadas.setLayout(contenedor_TablaAceptadasLayout);
+        contenedor_TablaAceptadasLayout.setHorizontalGroup(
+            contenedor_TablaAceptadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(contenedor_TablaAceptadasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 976, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+        contenedor_TablaAceptadasLayout.setVerticalGroup(
+            contenedor_TablaAceptadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contenedor_TablaAceptadasLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 587, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(34, 34, 34))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(76, 76, 76))
         );
+
+        tabLayout_apuestas.addTab("Aceptadas", contenedor_TablaAceptadas);
+
+        table_apuestasRechazadas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "No.", "Nombre postor", "Error", "Tipo", "Descripción"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(table_apuestasRechazadas);
+        if (table_apuestasRechazadas.getColumnModel().getColumnCount() > 0) {
+            table_apuestasRechazadas.getColumnModel().getColumn(0).setMinWidth(30);
+            table_apuestasRechazadas.getColumnModel().getColumn(0).setPreferredWidth(30);
+            table_apuestasRechazadas.getColumnModel().getColumn(0).setMaxWidth(30);
+            table_apuestasRechazadas.getColumnModel().getColumn(2).setMinWidth(200);
+            table_apuestasRechazadas.getColumnModel().getColumn(2).setPreferredWidth(200);
+            table_apuestasRechazadas.getColumnModel().getColumn(2).setMaxWidth(200);
+            table_apuestasRechazadas.getColumnModel().getColumn(3).setMinWidth(150);
+            table_apuestasRechazadas.getColumnModel().getColumn(3).setPreferredWidth(150);
+            table_apuestasRechazadas.getColumnModel().getColumn(3).setMaxWidth(150);
+        }
+
+        javax.swing.GroupLayout contenedor_TablaRechazadasLayout = new javax.swing.GroupLayout(contenedor_TablaRechazadas);
+        contenedor_TablaRechazadas.setLayout(contenedor_TablaRechazadasLayout);
+        contenedor_TablaRechazadasLayout.setHorizontalGroup(
+            contenedor_TablaRechazadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contenedor_TablaRechazadasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 976, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        contenedor_TablaRechazadasLayout.setVerticalGroup(
+            contenedor_TablaRechazadasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, contenedor_TablaRechazadasLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 544, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        tabLayout_apuestas.addTab("Rechazadas", contenedor_TablaRechazadas);
 
         javax.swing.GroupLayout panel_tab_ApuestasLayout = new javax.swing.GroupLayout(panel_tab_Apuestas);
         panel_tab_Apuestas.setLayout(panel_tab_ApuestasLayout);
         panel_tab_ApuestasLayout.setHorizontalGroup(
             panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tab_ApuestasLayout.createSequentialGroup()
+            .addGroup(panel_tab_ApuestasLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panel_tab_ApuestasLayout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panel_tab_ApuestasLayout.createSequentialGroup()
-                                .addGap(7, 7, 7)
-                                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panel_tab_ApuestasLayout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(btn_agregarApuestas, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btn_cargarApuetas, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(11, 11, 11))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(tabLayout_apuestas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(panel_tab_ApuestasLayout.createSequentialGroup()
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tab_ApuestasLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 776, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)))
-                .addContainerGap())
+                        .addGroup(panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tab_ApuestasLayout.createSequentialGroup()
+                                .addGroup(panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panel_tab_ApuestasLayout.createSequentialGroup()
+                                        .addGap(7, 7, 7)
+                                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(btn_agregarApuestas, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_cargarApuetas, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(23, 23, 23))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tab_ApuestasLayout.createSequentialGroup()
+                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 987, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(24, 24, 24))))))
         );
         panel_tab_ApuestasLayout.setVerticalGroup(
             panel_tab_ApuestasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -584,8 +655,8 @@ public class Hipodromo extends javax.swing.JFrame {
                 .addGap(19, 19, 19)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 609, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(tabLayout_apuestas, javax.swing.GroupLayout.PREFERRED_SIZE, 605, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         tabLayout.addTab("Apuestas", panel_tab_Apuestas);
@@ -593,17 +664,70 @@ public class Hipodromo extends javax.swing.JFrame {
         jLabel19.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
         jLabel19.setText("Filtrar por:");
 
-        cbBox_filtro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nombre [DESC]", "Punteo [DESC]" }));
+        cbBox_filtro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Total Ganado [DESC]", "Nombre [DESC]" }));
+        cbBox_filtro.setEnabled(false);
+        cbBox_filtro.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbBox_filtroItemStateChanged(evt);
+            }
+        });
+
+        table_ResultadosApuestas.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "No.", "Nombre", "[1]", "[2]", "[3]", "[4]", "[5]", "[6]", "[7]", "[8]", "[9]", "[10]", "Total Q."
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane4.setViewportView(table_ResultadosApuestas);
+        if (table_ResultadosApuestas.getColumnModel().getColumnCount() > 0) {
+            table_ResultadosApuestas.getColumnModel().getColumn(0).setMinWidth(30);
+            table_ResultadosApuestas.getColumnModel().getColumn(0).setPreferredWidth(30);
+            table_ResultadosApuestas.getColumnModel().getColumn(0).setMaxWidth(30);
+        }
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 831, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 860, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout panel_tab_ResultadosLayout = new javax.swing.GroupLayout(panel_tab_Resultados);
@@ -616,7 +740,7 @@ public class Hipodromo extends javax.swing.JFrame {
                     .addComponent(jSeparator3)
                     .addComponent(jPanel4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(panel_tab_ResultadosLayout.createSequentialGroup()
-                        .addGap(0, 710, Short.MAX_VALUE)
+                        .addGap(0, 718, Short.MAX_VALUE)
                         .addComponent(jLabel19)
                         .addGap(18, 18, 18)
                         .addComponent(cbBox_filtro, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -638,41 +762,60 @@ public class Hipodromo extends javax.swing.JFrame {
 
         tabLayout.addTab("Resultados", panel_tab_Resultados);
 
-        tabla_Historial.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "ID carrera", "Resultados Competencia", "Resultados Apuestas", "Apuestas Rechazadas"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
-            };
+        txtA_contenidoRegistro.setEditable(false);
+        txtA_contenidoRegistro.setColumns(20);
+        txtA_contenidoRegistro.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        txtA_contenidoRegistro.setRows(5);
+        jScrollPane2.setViewportView(txtA_contenidoRegistro);
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+        btn_RegistroResultadosC.setText("Resultados Carreras");
+        btn_RegistroResultadosC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_RegistroResultadosCActionPerformed(evt);
             }
         });
-        jScrollPane2.setViewportView(tabla_Historial);
+
+        btn_RegistroResultadosA.setText("Resultados Apuestas");
+        btn_RegistroResultadosA.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_RegistroResultadosAActionPerformed(evt);
+            }
+        });
+
+        btn_RegistrosRechazadas.setText("Apuestas Rechazadas");
+        btn_RegistrosRechazadas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_RegistrosRechazadasActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1000, Short.MAX_VALUE)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_RegistroResultadosC, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addComponent(btn_RegistroResultadosA, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(55, 55, 55)
+                .addComponent(btn_RegistrosRechazadas, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(169, 169, 169))
+            .addComponent(jScrollPane2)
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 849, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 740, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(btn_RegistroResultadosA, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
+                    .addComponent(btn_RegistroResultadosC, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_RegistrosRechazadas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(0, 24, Short.MAX_VALUE))
         );
 
-        jLabel20.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        jLabel20.setFont(new java.awt.Font("Dialog", 0, 17)); // NOI18N
         jLabel20.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel20.setText("Registros históricos");
 
@@ -689,12 +832,12 @@ public class Hipodromo extends javax.swing.JFrame {
             .addGroup(panel_tab_HistorialLayout.createSequentialGroup()
                 .addGap(363, 363, 363)
                 .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(410, Short.MAX_VALUE))
         );
         panel_tab_HistorialLayout.setVerticalGroup(
             panel_tab_HistorialLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_tab_HistorialLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(33, Short.MAX_VALUE)
                 .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -735,16 +878,17 @@ public class Hipodromo extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_agregarApuestasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_agregarApuestasActionPerformed
-         if(!this.manejadorInterfaz.hayDatosRepetidos(new String[]{cbBox_lugar1.getSelectedItem().toString(),
+        String[] datosIngresados =  new String[]{cbBox_lugar1.getSelectedItem().toString(),
              cbBox_lugar2.getSelectedItem().toString(), cbBox_lugar3.getSelectedItem().toString(), 
              cbBox_lugar4.getSelectedItem().toString(), cbBox_lugar5.getSelectedItem().toString(), 
              cbBox_lugar6.getSelectedItem().toString(), cbBox_lugar7.getSelectedItem().toString(), 
              cbBox_lugar8.getSelectedItem().toString(), cbBox_lugar9.getSelectedItem().toString(),
-             cbBox_lugar10.getSelectedItem().toString()})){
-             
-        //se crean el objeto para ser revisado y enviar una notificación si no se ha aceptado
-        //[este aviso se enviará en caso de add la apuesta manualmente, pues en la carga sería muy molesto xD]
-        //y se add al listado de errores            
+             cbBox_lugar10.getSelectedItem().toString()};
+        
+        if(!this.manejadorInterfaz.hayDatosRepetidos(datosIngresados)){             
+            this.manejadorCargaArchivo.getApuestasAceptadas().add(new Apuesta(txt_nombrePostor.getText(), 
+                    String.valueOf(spn_montoApostado.getValue()), datosIngresados));
+            this.manejadorInterfaz.addApuestasAceptadas(table_apuestasAprobadas);
         }else{
             JOptionPane.showMessageDialog(null, "No puedes repetir jinetes para\napostarles diferentes lugares", 
                     "Apuesta denegada", JOptionPane.WARNING_MESSAGE);
@@ -760,13 +904,57 @@ public class Hipodromo extends javax.swing.JFrame {
          
          if(path != null){
              this.manejadorCargaArchivo.revisarApuestasRecibidas(path);
-             this.taskManager.setApuestasAceptadas(this.manejadorCargaArchivo.getApuestasAceptadas());//si no se lee a tiempo el archivo, no habrá nullPointer del maneajdor, pero no se exe el método que setea los resutlados para las apuestas, debido a que la lista estará vacía...
+                          
+             this.manejadorInterfaz.addApuestasAceptadas(table_apuestasAprobadas);
+             this.manejadorInterfaz.addApuestasRechazadas(table_apuestasRechazadas);//Me hace falta crear esta tabla 
          }else{
              JOptionPane.showMessageDialog(null, "No seleccionaste archivo alguno, para\nempezar la carga de apuestas", 
                      "Ningún archivo seleccionado", JOptionPane.WARNING_MESSAGE);
          }
     }//GEN-LAST:event_btn_cargarApuetasActionPerformed
-         
+
+    private void cbBox_filtroItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbBox_filtroItemStateChanged
+            if(cbBox_filtro.getSelectedIndex() != this.filtroAnterior){
+                this.filtroAnterior = cbBox_filtro.getSelectedIndex();
+                
+                this.manejadorOrdenamiento.ordenar(this.filtroAnterior, this.manejadorCargaArchivo.getApuestasAceptadas());//para este punto ya se tendrá la lista llena, de todos modos aunque no sea así, no daría una excepción...
+                this.manejadorInterfaz.addResultadoApuestas();//se actualiza los datos de la tabla...
+            }
+    }//GEN-LAST:event_cbBox_filtroItemStateChanged
+
+    private void btn_RegistroResultadosCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RegistroResultadosCActionPerformed
+        this.manejadorInterfaz.mostrarContenidoRegistro(this.manejadorInterfaz.REGISTRO_CARRERAS, txtA_contenidoRegistro);        
+    }//GEN-LAST:event_btn_RegistroResultadosCActionPerformed
+
+    private void btn_RegistroResultadosAActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RegistroResultadosAActionPerformed
+        this.manejadorInterfaz.mostrarContenidoRegistro(this.manejadorInterfaz.REGISTRO_APUESTAS, txtA_contenidoRegistro);
+    }//GEN-LAST:event_btn_RegistroResultadosAActionPerformed
+
+    private void btn_RegistrosRechazadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_RegistrosRechazadasActionPerformed
+        this.manejadorInterfaz.mostrarContenidoRegistro(this.manejadorInterfaz.REGISTRO_RECHAZOS, txtA_contenidoRegistro);
+    }//GEN-LAST:event_btn_RegistrosRechazadasActionPerformed
+    
+    private void llenarItemCombos(String[] listaParticipantes){
+        this.crearListaCombos();
+        Nodo<JComboBox<String>> nodoComboBox = listaCombos.getFirst();
+        
+        do{
+            this.manejadorInterfaz.addElementosAJcomoBox(nodoComboBox.getContent(), listaParticipantes);
+        }while((nodoComboBox = nodoComboBox.getNext()) != null);
+    }
+    
+    private void crearListaCombos(){
+        listaCombos.add(cbBox_lugar1);
+        listaCombos.add(cbBox_lugar2);
+        listaCombos.add(cbBox_lugar3);
+        listaCombos.add(cbBox_lugar4);
+        listaCombos.add(cbBox_lugar5);
+        listaCombos.add(cbBox_lugar6);
+        listaCombos.add(cbBox_lugar7);
+        listaCombos.add(cbBox_lugar8);
+        listaCombos.add(cbBox_lugar9);
+        listaCombos.add(cbBox_lugar10);        
+    }
       
     /**
      * @param args the command line arguments
@@ -804,6 +992,9 @@ public class Hipodromo extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_RegistroResultadosA;
+    private javax.swing.JButton btn_RegistroResultadosC;
+    private javax.swing.JButton btn_RegistrosRechazadas;
     private javax.swing.JButton btn_agregarApuestas;
     private javax.swing.JButton btn_cargarApuetas;
     private javax.swing.JComboBox<String> cbBox_filtro;
@@ -818,6 +1009,8 @@ public class Hipodromo extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> cbBox_lugar8;
     private javax.swing.JComboBox<String> cbBox_lugar9;
     private javax.swing.JPanel contenedor_Posiciones;
+    private javax.swing.JPanel contenedor_TablaAceptadas;
+    private javax.swing.JPanel contenedor_TablaRechazadas;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -835,7 +1028,6 @@ public class Hipodromo extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -849,6 +1041,8 @@ public class Hipodromo extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
@@ -863,8 +1057,11 @@ public class Hipodromo extends javax.swing.JFrame {
     private javax.swing.JPanel panel_tab_Resultados;
     private javax.swing.JSpinner spn_montoApostado;
     private javax.swing.JTabbedPane tabLayout;
-    private javax.swing.JTable tabla_Historial;
+    private javax.swing.JTabbedPane tabLayout_apuestas;
+    private javax.swing.JTable table_ResultadosApuestas;
     private javax.swing.JTable table_apuestasAprobadas;
+    private javax.swing.JTable table_apuestasRechazadas;
+    private javax.swing.JTextArea txtA_contenidoRegistro;
     private javax.swing.JTextField txt_nombrePostor;
     // End of variables declaration//GEN-END:variables
 }

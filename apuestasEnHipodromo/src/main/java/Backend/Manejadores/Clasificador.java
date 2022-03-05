@@ -69,7 +69,7 @@ public class Clasificador {
                  addErroresRepeticion(repeticiones, listadoErrores);
         } 
         if(listadoJinetes.length <10){
-                  listadoErrores.add(new Error("#elementos insuficientes", "Solo especificaste "+(10-(listadoJinetes.length)) +" jinetes", "El orden apostado, debe incluir todos los jinetes"));
+                  listadoErrores.add(new Error("#elementos insuficientes", "Solo especificaste "+(listadoJinetes.length) +" jinetes", "El orden apostado, debe incluir todos los jinetes"));
         }else if(listadoJinetes.length > 10){//puesto tb podría ser mayor y eso estaría mal xD
                   listadoErrores.add(new Error("demasiados elementos", "Haz especificado más de 10 apuestas", "No existe más de 10 jinetes por los cuales apostar"));
         }
@@ -88,6 +88,8 @@ public class Clasificador {
             if(repeticiones[indice] > 0){
                 errores.add(new Error("elemento repetido", "el jinete "+ participantes[indice] + " se utiliza "+ repeticiones[indice], "A un jinete unicamente puedes apostarle una posición"));//"msje: No es posible incluir un mismo jinete más de una vez"                
             }
+            
+            indice++;
         }//no se add a las apuestas rechazadas aún, puesto que podría haber un error más xD        
     }
     

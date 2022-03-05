@@ -5,11 +5,13 @@
  */
 package Backend.Objetos.Apuesta;
 
+import java.io.Serializable;
+
 /**
  *
  * @author phily
  */
-public class Apuesta {
+public class Apuesta implements Serializable{
     String nombrePostor;
     String montoApostado;
     private String[] ordenApostado;
@@ -21,7 +23,9 @@ public class Apuesta {
         this.nombrePostor = nombrePostor;
         this.montoApostado = montoApostado;
         this.ordenApostado = ordenApostado;
-        this.resultado = new String[ordenApostado.length];
+        if(ordenApostado != null){
+            this.resultado = new String[ordenApostado.length];
+        }        
     }
     
     public void setResultados(int numeroResultado, String resultado){

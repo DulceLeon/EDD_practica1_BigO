@@ -45,7 +45,8 @@ public class ManejadorCarrera {
           pista.updateUI();
     }//invocado en el manejadorTemp
     
-    public void empezarCarrera(ManejadorInterfaz manejadorInterfaz, ManejadorResultados manejadorResultados){//O(2n) = O(n) uwu xd
+    public void empezarCarrera(ManejadorInterfaz manejadorInterfaz, ManejadorResultados manejadorResultados,
+    ManejadorReportes manejadorReportes){//O(2n) = O(n) uwu xd         
           String[] arregloBase = nombreJinetes;
           resultados = new String[]{null, null, null, null, null, null, null, null, null, null};
           int ubicacionGenerada;
@@ -68,17 +69,24 @@ public class ManejadorCarrera {
             }    
           }
           
-        postearResultados(jinetes[ubicacionPrimerJinete], manejadorInterfaz, manejadorResultados);
+        postearResultados(jinetes[ubicacionPrimerJinete], manejadorInterfaz, manejadorResultados, manejadorReportes);
     }//invocado al terminar el proceso del diálogo, luego de este se invocará al método de la interfaz para setear los datos en la tabla...
     
-    public void postearResultados(Jinete ultimoEnLlegar, ManejadorInterfaz manejadorInterfaz, ManejadorResultados manejadorResultados){        
+    public void postearResultados(Jinete ultimoEnLlegar, ManejadorInterfaz manejadorInterfaz,
+          ManejadorResultados manejadorResultados, ManejadorReportes manejadorReportes){        
+        
          timerResult = new Timer(700, new ActionListener(){//puse 700, puesto que ya habrán empezado a avanzar, y por las búsquedas de unicidad, no puedo decir que cada uno empiece a moverse después de un tiempo fijo xD
             @Override
             public void actionPerformed(ActionEvent e){
                 if(ultimoEnLlegar.getEstadoFinalizacion()){//se hace la diferencia, puesto que a la meta se logra llegar, disminuyendo valores en X...
                     manejadorInterfaz.crearTablaPosiciones(resultados);
-                    manejadorResultados.mostrarResultadosApuesta(resultados);
                     
+                    manejadorResultados.calcularResultadosApuestas(resultados);
+                    manejadorInterfaz.addResultadoApuestas();//aquí se invocará al método de la interfaz para mostrar los resultados en la tabla...
+                    manejadorInterfaz.habilitarFiltros();
+                    
+                    manejadorReportes.setResultados(resultados);
+                    manejadorReportes.generarReportes();                    
                      timerResult.stop();
                 }
             }        

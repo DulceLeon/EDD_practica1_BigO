@@ -5,10 +5,14 @@ Backend/Objetos/Interfaz/PistaCarreras.class
 Backend/Manejadores/ManejadorInterfaz.class
 Frontend/Hipodromo$1.class
 Frontend/Form_SolicitudJinetes$1.class
+Frontend/Hipodromo$9.class
+Frontend/Hipodromo$10.class
 Backend/Manejadores/ManejadorOrdenamiento.class
 Frontend/Hipodromo$2.class
 Backend/Manejadores/Clasificador.class
+Frontend/Hipodromo$8.class
 Backend/Objetos/EDD/ListaEnlazada.class
+Backend/Manejadores/ManejadorTablas.class
 Frontend/Hipodromo.class
 Frontend/Hipodromo$5.class
 Backend/Manejadores/ManejadorCarrera.class
@@ -16,10 +20,12 @@ Backend/Manejadores/Receptor.class
 Backend/Objetos/Interfaz/Jinete.class
 Backend/Objetos/EDD/Cola.class
 Frontend/Hipodromo$3.class
+Frontend/Hipodromo$7.class
 Backend/Manejadores/ManejadorResultados.class
 Frontend/Hipodromo$4.class
 Backend/Manejadores/ManejadorCarrera$1.class
 Backend/Objetos/Interfaz/Jinete$1.class
+Frontend/Hipodromo$11.class
 Backend/Objetos/Apuesta/Apuesta.class
 Frontend/Form_SolicitudJinetes.class
 Frontend/CareerAdvice.class

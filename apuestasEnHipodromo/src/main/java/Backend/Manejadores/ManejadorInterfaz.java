@@ -5,31 +5,63 @@
  */
 package Backend.Manejadores;
 
+import Backend.Objetos.Apuesta.Apuesta;
+import Backend.Objetos.Apuesta.ApuestaErronea;
+import Backend.Objetos.EDD.ListaEnlazada;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 
 /**
  *
  * @author phily
  */
 public class ManejadorInterfaz {    
+    public final int REGISTRO_CARRERAS = 0;
+    public final int REGISTRO_APUESTAS = 1;
+    public final int REGISTRO_RECHAZOS = 2;
+    private String tiposDeRegistros[] = {"ResultadosCarreras", "ResultadosApuestas", "ApuestasRechazadas"};
+    
     private final int widthPositionLabel = 200;
     private final int heightPositionLabel = 57;        
     private final int fieldBacgroundLabel_widht = 800;
     private final int fieldBacgroundLabel_height = 650;
     
     private JPanel contenedorPosiciones;//puesto que debe exe una axn con este entonces es razonable que esté aquí prte xD
+    private JTable tablaResultadosApuestas;
+    private JComboBox filtros;
     
-     public void setContenedorPosiciones(JPanel contenedorPosiciones){
+    //para llenar la JTable correspondiente
+    private ListaEnlazada<Apuesta> apuestasAceptadas;
+    private ListaEnlazada<ApuestaErronea> apuestasRechazadas;
+    
+    private ManejadorTablas manejadorTablas = new ManejadorTablas();
+    
+     public void setComponentes(JPanel contenedorPosiciones, JTable tablaResultadosApuestas, JComboBox filtros){
          this.contenedorPosiciones = contenedorPosiciones;
+         this.tablaResultadosApuestas = tablaResultadosApuestas;
+         this.filtros = filtros;
      }    
+     
+     public void setListasApuestas(ListaEnlazada<Apuesta> apuestasAceptadas, ListaEnlazada<ApuestaErronea> apuestasRechazadas){
+         this.apuestasAceptadas = apuestasAceptadas;
+         this.apuestasRechazadas = apuestasRechazadas;
+     }
     
       public void cambiarApariencia(){
         try{ 
@@ -38,6 +70,12 @@ public class ManejadorInterfaz {
            System.err.println("Imposible cargar interfaz, se usará la interfaz por defecto de Java.\nError: "+e);
         }         
     }    
+      
+      public void addElementosAJcomoBox(JComboBox<String> comboBox, String[] items){
+          for (int elemento = 0; elemento < items.length; elemento++) {
+              comboBox.addItem(items[elemento]);
+          }          
+      }
       
       public boolean elCampoEstaLleno(JTextField campo){
           return !(campo.getText().isBlank() && campo.getText().isEmpty());
@@ -112,6 +150,54 @@ public class ManejadorInterfaz {
         contenedorPosiciones.updateUI();
     }    
     
+    public void addApuestasAceptadas(JTable tablaApuestasAceptadas){
+        this.manejadorTablas.addApuestasAceptadas(tablaApuestasAceptadas, apuestasAceptadas);        
+    }//LISTO
+    
+      public void addApuestasRechazadas(JTable tablaApuestasRechazadas){
+       this.manejadorTablas.addApuestasRechazadas(tablaApuestasRechazadas, apuestasRechazadas);
+    }//LISTO    
+    
+      public void addResultadoApuestas(){
+          this.manejadorTablas.addResultadoApuestas(tablaResultadosApuestas, apuestasAceptadas);
+      }//LISTO 
+      
+      public void habilitarFiltros(){
+          this.filtros.setEnabled(true);
+      }
+      
+      public void mostrarContenidoRegistro(int tipoRegistro, JTextArea txtA_contenidoRegistro){
+          this.agregarContenidoDeRegistro(txtA_contenidoRegistro, this.mostrarChooserRegistros(tipoRegistro));
+      }
+      
+     private  String mostrarChooserRegistros(int tipoRegistro){
+       JFileChooser fileChooser = new JFileChooser();        
+        
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        FileNameExtensionFilter filtro = new FileNameExtensionFilter("Solo archivos .txt", new String[]{"txt"});//esto para evitar que pueda seleccionar cualquier otra extesión que no sea la requerida
+        fileChooser.setFileFilter(filtro);        
+        fileChooser.setCurrentDirectory(new File("src/main/resources/"+ this.tiposDeRegistros[tipoRegistro]));
+        
+        if(fileChooser.showOpenDialog(fileChooser)==(JFileChooser.APPROVE_OPTION)){
+            return fileChooser.getSelectedFile().getAbsolutePath();            
+        }        
+        return null;
+     }
+     
+     private void agregarContenidoDeRegistro(JTextArea txtA_contenidoRegistro, String path) {//no se si el usaurio pueda especificar el nombre, pues de ser así entonces si podría suceder un FileIOException...
+         if(path != null){
+             try {         
+                Scanner scanner = new Scanner(new File(path));
+                     txtA_contenidoRegistro.setText("");//se limpia el txtArea...
+                while(scanner.hasNext()){
+                     txtA_contenidoRegistro.insert(scanner.nextLine() + "\n", txtA_contenidoRegistro.getText().length());
+                }
+            } catch (FileNotFoundException ex) {
+                JOptionPane.showMessageDialog(null, "Archivo no encontrado", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+         }         
+     }      
+      
     public boolean confirmarCierreApp(JRootPane rootPane){
         
         Object [] opciones ={"Aceptar","Cancelar"};

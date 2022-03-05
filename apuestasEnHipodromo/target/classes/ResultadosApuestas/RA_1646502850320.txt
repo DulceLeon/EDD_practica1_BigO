@@ -1,0 +1,13 @@
+				RESULTADOS APUESTAS
+[1]  Nombre: Leon, Monto apostado: 1, Total ganado: 23
+	 jineteJ: 10, jineteI: -, jineteH: -, jineteG: 7, jineteF: 6, 
+	jineteE: -, jineteD: -, jineteC: -, jineteB: -, jineteA: -
+[2]  Nombre: Candy, Monto apostado: 1, Total ganado: 14
+	 jineteJ: 10, jineteI: -, jineteH: -, jineteF: -, jineteG: -, 
+	jineteE: -, jineteC: 4, jineteD: -, jineteB: -, jineteA: -
+[3]  Nombre: Any, Monto apostado: 1, Total ganado: 14
+	 jineteJ: 10, jineteI: -, jineteH: -, jineteF: -, jineteG: -, 
+	jineteE: -, jineteC: 4, jineteD: -, jineteB: -, jineteA: -
+[4]  Nombre: Dulce, Monto apostado: 1, Total ganado: 10
+	 jineteJ: 10, jineteI: -, jineteH: -, jineteF: -, jineteG: -, 
+	jineteE: -, jineteD: -, jineteC: -, jineteB: -, jineteA: -

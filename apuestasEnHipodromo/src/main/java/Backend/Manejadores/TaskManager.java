@@ -6,6 +6,7 @@
 package Backend.Manejadores;
 
 import Backend.Objetos.Apuesta.Apuesta;
+import Backend.Objetos.Apuesta.ApuestaErronea;
 import Backend.Objetos.EDD.ListaEnlazada;
 import Backend.Objetos.Interfaz.Jinete;
 import Frontend.CareerAdvice;
@@ -23,20 +24,21 @@ import javax.swing.Timer;
  */
 public class TaskManager {
     private int minutos = 0;//Equivaldrán a horas y los seg a mins xD
-    private int segundos = 5;        
+    private int segundos = 50;        
     private final JButton btn_cargarAPuestas;
     private final  JButton btn_agregarApuestas;
 
     private final ManejadorCarrera manejadorCarrera;
-    private  final ManejadorInterfaz manejadorInterfaz;
-    private final  ManejadorResultados manejadorResultados;//mejor se hará en la interfaz, bueno en caso decidas hacer una tabla en lugar del Jasper, aunque yo diría es mejor el Jasper xD pues de todos modos tendrías que pasar los datos de la tabla a un archivo, entonces para mayor presentabiliadd el Jasper de una vez xD
+    private  final ManejadorInterfaz manejadorInterfaz;    
     
     CareerAdvice careerAdvice = new CareerAdvice(null, true);
+    private final  ManejadorResultados manejadorResultados;//mejor se hará en la interfaz, bueno en caso decidas hacer una tabla en lugar del Jasper, aunque yo diría es mejor el Jasper xD pues de todos modos tendrías que pasar los datos de la tabla a un archivo, entonces para mayor presentabiliadd el Jasper de una vez xD
+    private final ManejadorReportes manejadorReportes;
     
     Timer timerBets;            
     
     public TaskManager(JButton btn_cargarAPuestas, JButton btn_agregarAPuestas, JPanel pista, 
-            ManejadorInterfaz manejadorInterfaz, String[] nombreJinetesParticipantes){
+            ManejadorInterfaz manejadorInterfaz, String[] nombreJinetesParticipantes, ManejadorOrdenamiento manejadorOrdenamiento){
         this.manejadorCarrera = new ManejadorCarrera(pista, nombreJinetesParticipantes);        
         
         this.btn_agregarApuestas = btn_agregarAPuestas;
@@ -44,10 +46,13 @@ public class TaskManager {
         
         this.manejadorInterfaz = manejadorInterfaz;                
         this.manejadorResultados = new ManejadorResultados();// lo único que debe recibir es el arreglo de resultados y de apuestas, por cierto debo ver donde instanciaré el obj de Clasificador, deplano igual que el revisor, puesto que el método se invocará justo debajo de donde se invoque el del revisor xD
+        this.manejadorReportes = new ManejadorReportes(manejadorOrdenamiento);
     }    
     
-    public void setApuestasAceptadas(ListaEnlazada<Apuesta> apuestasAceptadas){
-         this.manejadorResultados.setApuestasAceptadas(apuestasAceptadas);         
+    public void setApuestasAceptadas(ListaEnlazada<Apuesta> apuestasAceptadas, ListaEnlazada<ApuestaErronea> apuestasErroneas){
+         this.manejadorResultados.setApuestasAceptadas(apuestasAceptadas);//si no se lee a tiempo el archivo, no habrá nullPointer del maneajdor, pero no se exe el método que setea los resutlados para las apuestas, debido a que la lista estará vacía... 
+         this.manejadorInterfaz.setListasApuestas(apuestasAceptadas, apuestasErroneas);
+         this.manejadorReportes.setListas(apuestasAceptadas, apuestasErroneas);
     }
     
     public void startCountDown_toBets(JLabel labelMIns, JLabel labelSegs){        
@@ -83,7 +88,7 @@ public class TaskManager {
        // CarrerAdvice carrerAdvice = new CarrerAdvice(null, true);
           this.manejadorCarrera.posicionarJinetes();         
        
-         careerAdvice.iniciarCuentaRegresiva(manejadorCarrera, manejadorInterfaz, manejadorResultados);
+         careerAdvice.iniciarCuentaRegresiva(manejadorCarrera, manejadorInterfaz, manejadorResultados, manejadorReportes);
          careerAdvice.setVisible(true);          
                 
          //   startCountDouwn_Carrer(new CarrerAdvice(null, true));        

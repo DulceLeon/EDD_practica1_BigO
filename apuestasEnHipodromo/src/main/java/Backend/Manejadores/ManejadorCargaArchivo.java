@@ -8,6 +8,7 @@ package Backend.Manejadores;
 import Backend.Objetos.Apuesta.Apuesta;
 import Backend.Objetos.Apuesta.ApuestaErronea;
 import Backend.Objetos.EDD.ListaEnlazada;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,11 +23,12 @@ public class ManejadorCargaArchivo {
         this.clasificador = new Clasificador(nombreParticipantes);
     }
     
-    public void revisarApuestasRecibidas(String path){
-        //aquí haces lo que debas hacer con el JFileChooser
-        
+    public void revisarApuestasRecibidas(String path){        
         this.receptor.leerArchivoEntrada(path);
+        System.out.println("Se han agregado los arreglos base");
         this.clasificador.estudiarApuestasRecibidas(this.receptor.getApuestasRecibidas());        
+        JOptionPane.showMessageDialog(null, "Se ha terminado de revisar todas las\napuestas recibidas y se han"
+                + " clasificado\ncomo corresponde", "Carga de apuestas exitosa", JOptionPane.INFORMATION_MESSAGE);
     }
     
     

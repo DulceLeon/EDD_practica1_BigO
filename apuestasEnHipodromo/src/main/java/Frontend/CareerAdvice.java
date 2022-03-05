@@ -7,6 +7,7 @@ package Frontend;
 
 import Backend.Manejadores.ManejadorCarrera;
 import Backend.Manejadores.ManejadorInterfaz;
+import Backend.Manejadores.ManejadorReportes;
 import Backend.Manejadores.ManejadorResultados;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,7 +33,7 @@ public class CareerAdvice extends javax.swing.JDialog implements ActionListener{
     }
     
     public void iniciarCuentaRegresiva(ManejadorCarrera manejadorCarrera, ManejadorInterfaz manejadorInterfaz,
-            ManejadorResultados manejadorResultados){
+            ManejadorResultados manejadorResultados, ManejadorReportes manejadorReportes){
         
        timerToCarrer = new Timer(1000, (ActionEvent e) -> {            
             if(secondsToStart > 0){
@@ -43,7 +44,7 @@ public class CareerAdvice extends javax.swing.JDialog implements ActionListener{
                 this.dispose();
                 timerToCarrer.stop();
                 
-                manejadorCarrera.empezarCarrera(manejadorInterfaz, manejadorResultados);
+                manejadorCarrera.empezarCarrera(manejadorInterfaz, manejadorResultados, manejadorReportes);
             }
         
            });

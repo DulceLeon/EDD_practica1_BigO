@@ -5,6 +5,7 @@
  */
 package Backend.Manejadores;
 
+import Backend.Herramientas.Herramientas;
 import Backend.Objetos.EDD.ListaEnlazada;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -17,9 +18,11 @@ import javax.swing.JOptionPane;
  * @author phily
  */
 public class Receptor {
+    private Herramientas herramienta;
     private ListaEnlazada<String[]> apuestasRecibidas;    
     
     public Receptor(){
+        herramienta = new Herramientas();
         apuestasRecibidas = new ListaEnlazada<>();
     }
     
@@ -29,7 +32,7 @@ public class Receptor {
                 String lineaAEstudiar;                
                 
                 while((lineaAEstudiar=buffer.readLine())!=null){                                                            
-                    addApuesta(lineaAEstudiar.split(",")); 
+                    addApuesta(herramienta.eliminarEspaciosDeElementos(lineaAEstudiar.split(","))); 
                 }
                 
             }catch(FileNotFoundException exc){                                

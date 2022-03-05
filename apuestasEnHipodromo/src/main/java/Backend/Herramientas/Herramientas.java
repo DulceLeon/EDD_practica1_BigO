@@ -11,11 +11,12 @@ package Backend.Herramientas;
  */
 public class Herramientas {
     
-    public int [] reducirArreglo(int [] arregloAReducir, int posicionAEliminar){
-        int[] nuevoArreglo = new int[arregloAReducir.length-1];
+    public String[] eliminarEspaciosDeElementos(String[] arreglo){
+        for(int indice = 0; indice < arreglo.length; indice++){
+            arreglo[indice] = arreglo[indice].trim();
+        }
         
-     
-        return nuevoArreglo;
+        return arreglo;
     }
     
 }

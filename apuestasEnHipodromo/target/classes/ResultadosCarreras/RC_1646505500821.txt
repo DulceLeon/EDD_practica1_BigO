@@ -1,0 +1,11 @@
+				RESULTADOS CARRERA
+			1.   jineteE
+			2.   jineteA
+			3.   jineteG
+			4.   jineteD
+			5.   jineteC
+			6.   jineteF
+			7.   jineteB
+			8.   jineteI
+			9.   jineteJ
+			10.   jineteH

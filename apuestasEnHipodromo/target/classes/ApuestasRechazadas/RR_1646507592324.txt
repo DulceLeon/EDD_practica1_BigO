@@ -1,0 +1,4 @@
+				APUESTAS RECHAZADAS
+
+[1]  Nombre: Dulce
+      Error: el jinete jineteA se utiliza 1, Tipo: elemento repetido, Descripcion: A un jinete unicamente puedes apostarle una posición

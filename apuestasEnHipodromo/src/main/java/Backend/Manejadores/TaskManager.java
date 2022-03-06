@@ -23,8 +23,8 @@ import javax.swing.Timer;
  * @author phily
  */
 public class TaskManager {
-    private int minutos = 0;//Equivaldrán a horas y los seg a mins xD
-    private int segundos = 50;        
+    private int minutos = 1;//Equivaldrán a horas y los seg a mins xD
+    private int segundos = 60;        
     private final JButton btn_cargarAPuestas;
     private final  JButton btn_agregarApuestas;
 

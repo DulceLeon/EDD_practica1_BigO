@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  * @author phily
  */
 public class PistaCarreras extends JPanel{        
-    Image image = new ImageIcon(getClass().getResource("/pista_Hipodromo_redimensionada.png")).getImage();//pistaHipodromo_etiquetada
+    private Image image = new ImageIcon(getClass().getResource("/pista_Hipodromo_redimensionada.png")).getImage();//pistaHipodromo_etiquetada
 
     @Override
     public void paint(Graphics graficas){

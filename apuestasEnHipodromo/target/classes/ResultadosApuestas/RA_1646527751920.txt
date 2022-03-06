@@ -1,0 +1,10 @@
+				RESULTADOS APUESTAS
+
+[1]  Nombre: Anfaly, Monto apostado: 1, Total ganado: 6
+	 jinte1: -, jinete2: -, jinete3: -, jinete4: -, jinete5: 6, jinete6: -, jinete7: -, jinete8: -, jinete9: -, jinete10: -
+
+[2]  Nombre: Dulce, Monto apostado: 1, Total ganado: 6
+	 jinte1: -, jinete3: -, jinete2: -, jinete4: -, jinete5: 6, jinete6: -, jinete7: -, jinete8: -, jinete9: -, jinete10: -
+
+[3]  Nombre: , Monto apostado: 1, Total ganado: 0
+	 jinete10: -, jinete9: -, jinete8: -, jinete7: -, jinete6: -, jinete5: -, jinete4: -, jinete3: -, jinete2: -, jinte1: -

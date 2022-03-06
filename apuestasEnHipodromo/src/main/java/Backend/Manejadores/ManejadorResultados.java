@@ -43,9 +43,9 @@ public class ManejadorResultados {//su método debe ser invocado justo después 
             }while((nodoApuesta = nodoApuesta.getNext()) != null);
         }
         
-        for (int revision = 0; revision < apuestasAceptadas.getSize(); revision++) {
+   /*     for (int revision = 0; revision < apuestasAceptadas.getSize(); revision++) {
                System.out.println((revision+1) + " "+ apuestasAceptadas);//solo es para ver que tenga aún los datos, aunque yo diría que sí xD
-        }
+        }*/
     }//Servicio crítico 3 [LISTO] -> O(n) uwu xD
     //no requiere devolver algo, puesto que los datos se actualizan indirectamente en la lista de las apuestasAceptadas, que posee el clasificador...
     

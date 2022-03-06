@@ -32,10 +32,6 @@ public class ManejadorCarrera {
         this.nombreJinetes = nombreParticipantes;
     }
     
-    public void setManejadorResultados(){
-    
-    }
-    
     public void posicionarJinetes(){     
           for (int jinete = 0; jinete < jinetes.length ; jinete++) {
               jinetes[jinete] = new Jinete(this.pista, new ImageIcon(getClass().getResource("/jinete-"+(10-jinete)+ ".png")),

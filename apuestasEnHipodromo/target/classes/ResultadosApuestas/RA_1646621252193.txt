@@ -1,0 +1,13 @@
+				RESULTADOS APUESTAS
+
+[1]  Nombre: Dulce, Monto apostado: 15, Total ganado: 23
+	 jineteA: 10, jineteB: -, jineteC: 8, jineteD: -, jineteE: -, jineteF: 5, jineteG: -, jineteH: -, jineteI: -, jineteJ: -
+
+[2]  Nombre: Monzon, Monto apostado: 1, Total ganado: 5
+	 jineteJ: -, jineteI: -, jineteH: -, jineteG: -, jineteE: -, jineteF: 5, jineteD: -, jineteC: -, jineteA: -, jineteB: -
+
+[3]  Nombre: Leon, Monto apostado: 1, Total ganado: 2
+	 jineteJ: -, jineteI: -, jineteH: -, jineteG: -, jineteF: -, jineteE: -, jineteD: -, jineteC: -, jineteB: 2, jineteA: -
+
+[4]  Nombre: Pilar, Monto apostado: 19, Total ganado: 0
+	 jineteJ: -, jineteH: -, jineteG: -, jineteF: -, jineteE: -, jineteD: -, jineteC: -, jineteB: -, jineteA: -, jineteI: -

@@ -1,0 +1,19 @@
+				RESULTADOS APUESTAS
+
+[1]  Nombre: Monzon, Monto apostado: 1, Total ganado: 12
+	 jineteJ: -, jineteH: -, jineteI: 8, jineteG: -, jineteF: -, jineteE: -, jineteD: -, jineteC: 3, jineteA: -, jineteB: 1
+
+[2]  Nombre: Torty, Monto apostado: 1, Total ganado: 12
+	 jineteJ: -, jineteH: -, jineteI: 8, jineteF: -, jineteG: -, jineteE: -, jineteD: -, jineteC: 3, jineteA: -, jineteB: 1
+
+[3]  Nombre: Candy, Monto apostado: 1, Total ganado: 9
+	 jineteJ: -, jineteH: -, jineteI: 8, jineteF: -, jineteG: -, jineteE: -, jineteD: -, jineteA: -, jineteC: -, jineteB: 1
+
+[4]  Nombre: Dulce, Monto apostado: 15, Total ganado: 5
+	 jineteA: -, jineteB: -, jineteC: -, jineteD: -, jineteE: -, jineteF: 5, jineteG: -, jineteH: -, jineteI: -, jineteJ: -
+
+[5]  Nombre: Leon, Monto apostado: 1, Total ganado: 3
+	 jineteJ: -, jineteI: -, jineteH: -, jineteG: -, jineteF: -, jineteE: -, jineteD: -, jineteC: 3, jineteB: -, jineteA: -
+
+[6]  Nombre: Pilar, Monto apostado: 19, Total ganado: 0
+	 jineteJ: -, jineteH: -, jineteG: -, jineteF: -, jineteE: -, jineteD: -, jineteC: -, jineteB: -, jineteA: -, jineteI: -

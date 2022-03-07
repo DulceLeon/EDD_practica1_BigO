@@ -12,7 +12,6 @@ import Backend.Objetos.EDD.Nodo;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.time.LocalDate;
 import Backend.Objetos.Error;
 
 /**
@@ -45,6 +44,7 @@ public class ManejadorReportes {//igual que el manejador dde interfaz, para que 
         generarReporteResultadosCarrera(IDCarrera);
         generarReporteAPuestas(IDCarrera);
         generarReporteApuestasRechazadas(IDCarrera);
+        generarReportesComplejidad(IDCarrera);
     }
     
     private void generarReporteResultadosCarrera(String IDCarrera){       
@@ -160,10 +160,8 @@ public class ManejadorReportes {//igual que el manejador dde interfaz, para que 
         }      
     }
     
-    //uno general
-    //otro para enviar el .jasper del de r// apuestas, otro para los errores y otro para el reporte que resta xD, en resumen uno general que recibirá como parám además de la info, el tipo de reporte a mostrar xD
-    
-    
-    //imagino que será invocado en el cuerpo de la clase Manejador resultados...
+  public void generarReportesComplejidad(String IDCarrera){
+      
+  }
     
 }

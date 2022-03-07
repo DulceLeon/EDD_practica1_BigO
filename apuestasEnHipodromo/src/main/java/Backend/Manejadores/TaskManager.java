@@ -45,7 +45,7 @@ public class TaskManager {
         this.btn_cargarAPuestas = btn_cargarAPuestas;        
         
         this.manejadorInterfaz = manejadorInterfaz;                
-        this.manejadorResultados = new ManejadorResultados();// lo único que debe recibir es el arreglo de resultados y de apuestas, por cierto debo ver donde instanciaré el obj de Clasificador, deplano igual que el revisor, puesto que el método se invocará justo debajo de donde se invoque el del revisor xD
+        this.manejadorResultados = new ManejadorResultados(manejadorOrdenamiento);// lo único que debe recibir es el arreglo de resultados y de apuestas, por cierto debo ver donde instanciaré el obj de Clasificador, deplano igual que el revisor, puesto que el método se invocará justo debajo de donde se invoque el del revisor xD
         this.manejadorReportes = new ManejadorReportes(manejadorOrdenamiento);
     }    
     
